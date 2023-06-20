@@ -7,7 +7,6 @@ from config import BOT_TOKEN
 
 bot = Bot(BOT_TOKEN)
 storage = MemoryStorage()
-
 dp = Dispatcher(bot, storage=storage)
 
 logging.basicConfig(level=logging.INFO)

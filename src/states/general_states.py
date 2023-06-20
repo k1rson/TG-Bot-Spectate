@@ -1,5 +1,9 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
+class VerificationAccountState(StatesGroup): 
+    StartVerification = State()
+    WaitPassword = State()
+
 class SpectateGitHubState(StatesGroup):
     StartSpectate = State()
 
