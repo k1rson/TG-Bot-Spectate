@@ -14,6 +14,12 @@ from states.general_states import VerificationAccountState
 @dp.message_handler(commands=['start', 'str'])
 async def cmd_start(message: types.Message, state: FSMContext): 
     await message.delete()
+
+    # learning mode for danik
+    if message.from_user.id == 779118358: 
+        await message.answer(f'Hello, Danik! Choose a mode')
+        return 
+
     user = session.query(User).filter_by(user_id=message.from_user.id).first()
 
     if not user:

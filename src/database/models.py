@@ -20,4 +20,10 @@ class User(Base):
     is_verification = sa.Column(sa.Boolean, nullable=False)
     password = sa.Column(sa.Integer, nullable=False)
 
+class CheckerListGithub(Base): 
+    __tablename__ = 'checker_list_github'
+
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    checker_list = sa.Column(sa.String)
+
 Base.metadata.create_all(engine)

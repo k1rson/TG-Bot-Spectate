@@ -16,7 +16,6 @@ from handlers.user.logic.vk_state_logic import *
 from handlers.user.logic.discord_state_logic import *
 from handlers.user.logic.telegram_state_logic import *
 
-messages = []
 # VERIFICATION 
 @dp.callback_query_handler(state=VerificationAccountState.StartVerification)
 async def start_verification_handler(callback_query: types.CallbackQuery, state: FSMContext): 
@@ -50,6 +49,7 @@ async def start_verification_handler(callback_query: types.CallbackQuery, state:
         await callback_query.message.answer('So bad. GoodBye and GoodLuck 😟 /start')
         await state.finish()
 
+messages = [] # так делать нельзя :(
 @dp.message_handler(state=VerificationAccountState.WaitPassword)
 async def wait_password_handler(message: types.Message, state: FSMContext): 
     messages.append(message)

@@ -1,5 +1,9 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
+class WorkModeState(StatesGroup): 
+    StartSpectateMode = State()
+    StartTrainingMode = State()
+
 class VerificationAccountState(StatesGroup): 
     StartVerification = State()
     WaitPassword = State()
