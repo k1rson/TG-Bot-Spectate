@@ -16,6 +16,7 @@ from handlers.user.logic.vk_state_logic import *
 from handlers.user.logic.discord_state_logic import *
 from handlers.user.logic.telegram_state_logic import *
 
+messages = []
 # VERIFICATION 
 @dp.callback_query_handler(state=VerificationAccountState.StartVerification)
 async def start_verification_handler(callback_query: types.CallbackQuery, state: FSMContext): 
@@ -41,37 +42,43 @@ async def start_verification_handler(callback_query: types.CallbackQuery, state:
         await asyncio.sleep(3)
         await msg.delete()
 
-        await callback_query.message.answer('Enter your *password*: ', parse_mode='Markdown')
+        msg = await callback_query.message.answer('Enter your *password*: ', parse_mode='Markdown')
         await VerificationAccountState.WaitPassword.set()
 
     elif callback_query.data == 'cancel_verification': 
         await callback_query.message.delete()
-        await callback_query.message.answer('So bad. GoodBye and GoodLuck 😟')
+        await callback_query.message.answer('So bad. GoodBye and GoodLuck 😟 /start')
+        await state.finish()
 
 @dp.message_handler(state=VerificationAccountState.WaitPassword)
 async def wait_password_handler(message: types.Message, state: FSMContext): 
-    messages = []
     messages.append(message)
 
-    password = int(message.text)
+    try: 
+        password = int(message.text)
+    except: 
+        msg = await message.answer('Please enter the correct password! 4 digits')
+        messages.append(msg)
+        return
 
     user = session.query(User).filter_by(user_id=message.from_user.id).first()
 
     if user.password != password: 
         msg = await message.answer('Invalid password. Try again')
         messages.append(msg)
-        messages.append(message)
         return 
     
     msg = await message.answer('Great! Googluck!')
     messages.append(msg)
     await asyncio.sleep(1)
 
-    for message in messages: 
-        await message.delete()
+    for msg in messages: 
+        await msg.delete()
 
     await state.finish()
     await message.answer('*Service selection panel*', parse_mode='Markdown', reply_markup=user_keyboard_work_mode)
+    
+    messages.clear()
 
 # SPECTATE GITHUB
 @dp.callback_query_handler(state=SpectateGitHubState.StartSpectate)

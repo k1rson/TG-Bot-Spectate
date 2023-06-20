@@ -17,7 +17,7 @@ async def selectel_panel_handler(callback_query: types.CallbackQuery, state: FSM
 
     elif callback_query.data == 'cancel_verification':
         await callback_query.message.delete()
-        await callback_query.message.answer('So bad. GoodBye and GoodLuck 😟')
+        await callback_query.message.answer('So bad. GoodBye and GoodLuck 😟 /start')
     
     elif callback_query.data == 'set_state_github': 
         await callback_query.message.delete()
