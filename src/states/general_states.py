@@ -1,25 +1,28 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-class WorkModeState(StatesGroup): 
+class WorkModeState(StatesGroup):
     StartSpectateMode = State()
     StartTrainingMode = State()
 
-class VerificationAccountState(StatesGroup): 
+
+class VerificationAccountState(StatesGroup):
     StartVerification = State()
     WaitPassword = State()
 
-class SpectateGitHubState(StatesGroup):
+class SpectateStateMixin(StatesGroup):
     StartSpectate = State()
 
-class SpectateTwitchState(StatesGroup):
-    StartSpectate = State()
+class SpectateGitHubState(SpectateStateMixin):
+    pass
 
-class SpectateVKState(StatesGroup):
-    StartSpectate = State()
+class SpectateTwitchState(SpectateStateMixin):
+    pass
 
-class SpectateDiscordState(StatesGroup):
-    StartSpectate = State()
+class SpectateVKState(SpectateStateMixin):
+    pass
 
-class SpectateTelegramState(StatesGroup):
-    StartSpectate = State()
+class SpectateDiscordState(SpectateStateMixin):
+    pass
 
+class SpectateTelegramState(SpectateStateMixin):
+    pass

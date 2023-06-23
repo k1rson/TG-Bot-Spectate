@@ -6,9 +6,18 @@ from aiogram.dispatcher import FSMContext
 from initializer import dp, bot
 from database.models import User, session
 
+from supporting_module import delete_message_and_answer
+
 from keyboards.user.inline_keyboard import user_keyboard_work_mode
 
-from states.general_states import SpectateGitHubState, SpectateTwitchState, SpectateVKState, SpectateDiscordState, SpectateTelegramState, VerificationAccountState
+from states.general_states import (
+    SpectateGitHubState, 
+    SpectateTwitchState, 
+    SpectateVKState, 
+    SpectateDiscordState, 
+    SpectateTelegramState, 
+    VerificationAccountState
+)
 
 from handlers.user.logic.github_state_logic import *
 from handlers.user.logic.twitch_state_logic import *
@@ -18,16 +27,19 @@ from handlers.user.logic.telegram_state_logic import *
 
 # VERIFICATION 
 @dp.callback_query_handler(state=VerificationAccountState.StartVerification)
-async def start_verification_handler(callback_query: types.CallbackQuery, state: FSMContext): 
-    if callback_query.data == 'continue_verification': 
-        await callback_query.message.delete()
+async def start_verification_handler(query: types.CallbackQuery, state: FSMContext): 
+    data = query.data
+    message = query.message
+    
+    if data == 'continue_verification': 
+        await message.delete()
 
         rnd_value = random.sample(range(10), 4)
         password = int(''.join(map(str, rnd_value)))
 
         user = User(
-            username = callback_query.from_user.username, 
-            user_id = callback_query.from_user.id, 
+            username = query.from_user.username, 
+            user_id = query.from_user.id, 
             is_verification = True, 
             password = password
         )
@@ -35,21 +47,20 @@ async def start_verification_handler(callback_query: types.CallbackQuery, state:
         session.add(user)
         session.commit()
 
-        msg = await bot.send_message(callback_query.message.chat.id, f'Great! You have passed verification, you need a password to work: *{password}*.\n'\
+        msg = await bot.send_message(query.message.chat.id, f'Great! You have passed verification, you need a password to work: *{password}*.\n'\
             'The message will be deleted after 10 seconds. GoogLuck 😃', parse_mode='Markdown')
         
-        await asyncio.sleep(3)
+        await asyncio.sleep(3) # ten seconds 
         await msg.delete()
 
-        msg = await callback_query.message.answer('Enter your *password*: ', parse_mode='Markdown')
+        msg = await query.message.answer('Enter your *password*: ', parse_mode='Markdown')
         await VerificationAccountState.WaitPassword.set()
 
-    elif callback_query.data == 'cancel_verification': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('So bad. GoodBye and GoodLuck 😟 /start')
+    elif data == 'cancel_verification': 
+        await delete_message_and_answer(query, 'So bad. GoodBye and GoodLuck 😟 /start')
         await state.finish()
 
-messages = [] # так делать нельзя :(
+messages = [] 
 @dp.message_handler(state=VerificationAccountState.WaitPassword)
 async def wait_password_handler(message: types.Message, state: FSMContext): 
     messages.append(message)

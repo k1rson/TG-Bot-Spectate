@@ -25,5 +25,6 @@ class CheckerListGithub(Base):
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     checker_list = sa.Column(sa.String)
+    user_id = sa.Column(sa.BigInteger, nullable=False)
 
 Base.metadata.create_all(engine)

@@ -1,50 +1,48 @@
 from aiogram import types
-from aiogram.dispatcher import FSMContext
 
 from initializer import dp
 
-from keyboards.user.inline_keyboard import keyboard_spectate_github, keyboard_spectate_twitch, keyboard_spectate_vk, keyboard_spectate_discord, keyboard_spectate_telegram, user_keyboard_verification_process
+from supporting_module import delete_message_and_answer
 
-from states.general_states import SpectateGitHubState, SpectateTwitchState, SpectateVKState, SpectateDiscordState, SpectateTelegramState, VerificationAccountState
+from keyboards.user.inline_keyboard import (
+    keyboard_spectate_github,
+    keyboard_spectate_twitch,
+    keyboard_spectate_vk,
+    keyboard_spectate_discord,
+    keyboard_spectate_telegram,
+    user_keyboard_verification_process,
+)
+
+from states.general_states import (
+    SpectateGitHubState,
+    SpectateTwitchState,
+    SpectateVKState,
+    SpectateDiscordState,
+    SpectateTelegramState,
+    VerificationAccountState,
+)
 
 @dp.callback_query_handler(lambda c: True)
-async def selectel_panel_handler(callback_query: types.CallbackQuery, state: FSMContext): 
-    if callback_query.data == 'start_verification': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('You *agree* to the processing of data?', parse_mode='Markdown', reply_markup=user_keyboard_verification_process)
-        
-        await VerificationAccountState.StartVerification.set()
+async def selectel_panel_handler(query: types.CallbackQuery): 
+    data = query.data
 
-    elif callback_query.data == 'cancel_verification':
-        await callback_query.message.delete()
-        await callback_query.message.answer('So bad. GoodBye and GoodLuck 😟 /start')
+    if data == 'start_verification': 
+        await delete_message_and_answer(query, 'You *agree* to the processing of data?', VerificationAccountState.StartVerification, user_keyboard_verification_process)
     
-    elif callback_query.data == 'set_state_github': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('The operation mode was selected. *Current mode: GitHub*', parse_mode='Markdown', reply_markup=keyboard_spectate_github)
+    elif data == 'cancel_verification':
+        await delete_message_and_answer(query, 'So bad. GoodBye and GoodLuck 😟 /start')
 
-        await SpectateGitHubState.StartSpectate.set()
+    elif data == 'set_state_github':
+        await delete_message_and_answer(query, 'The operation mode was selected. *Current mode: GitHub*', SpectateGitHubState.StartSpectate, keyboard_spectate_github)
 
-    elif callback_query.data == 'set_state_twitch': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('The operation mode was selected. *Current mode: Twitch*', parse_mode='Markdown', reply_markup=keyboard_spectate_twitch)
+    elif data == 'set_state_twitch':
+        await delete_message_and_answer(query, 'The operation mode was selected. *Current mode: Twitch*', SpectateTwitchState.StartSpectate, keyboard_spectate_twitch)
 
-        await SpectateTwitchState.StartSpectate.set()
+    elif data == 'set_state_vk':
+        await delete_message_and_answer(query, 'The operation mode was selected. *Current mode: VK*', SpectateVKState.StartSpectate, keyboard_spectate_vk)
 
-    elif callback_query.data == 'set_state_vk': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('The operation mode was selected. *Current mode: VK*', parse_mode='Markdown', reply_markup=keyboard_spectate_vk)
+    elif data == 'set_state_discord':
+        await delete_message_and_answer(query, 'The operation mode was selected. *Current mode: Discord*', SpectateDiscordState.StartSpectate, keyboard_spectate_discord)
 
-        await SpectateVKState.StartSpectate.set()
-
-    elif callback_query.data == 'set_state_discord': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('The operation mode was selected. *Current mode: Discord*', parse_mode='Markdown', reply_markup=keyboard_spectate_discord)
-
-        await SpectateDiscordState.StartSpectate.set()
-
-    elif callback_query.data == 'set_state_telegram': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('The operation mode was selected. *Current mode: Telegram*', parse_mode='Markdown', reply_markup=keyboard_spectate_telegram)
-
-        await SpectateTelegramState.StartSpectate.set()
+    elif data == 'set_state_telegram':
+        await delete_message_and_answer(query, 'The operation mode was selected. *Current mode: Telegram*', SpectateTelegramState.StartSpectate, keyboard_spectate_telegram)
