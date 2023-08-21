@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, aliased, Query
+from sqlalchemy.orm import sessionmaker
 
 from config import DATABASE_URL
 
@@ -20,11 +20,15 @@ class User(Base):
     is_verification = sa.Column(sa.Boolean, nullable=False)
     password = sa.Column(sa.Integer, nullable=False)
 
-class CheckerListGithub(Base): 
-    __tablename__ = 'checker_list_github'
+class CheckerLists(Base): 
+    __tablename__ = 'checker_lists'
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    checker_list = sa.Column(sa.String)
+    checker_list_github = sa.Column(sa.ARRAY(sa.String))
+    checker_list_twitch = sa.Column(sa.ARRAY(sa.String))
+    checker_list_vk = sa.Column(sa.ARRAY(sa.String))
+    checker_list_discord = sa.Column(sa.ARRAY(sa.String))
+    checker_list_telegram = sa.Column(sa.ARRAY(sa.String))
     user_id = sa.Column(sa.BigInteger, nullable=False)
 
 Base.metadata.create_all(engine)

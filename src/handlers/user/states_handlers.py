@@ -6,8 +6,6 @@ from aiogram.dispatcher import FSMContext
 from initializer import dp, bot
 from database.models import User, session
 
-from supporting_module import delete_message_and_answer
-
 from keyboards.user.inline_keyboard import user_keyboard_work_mode
 
 from states.general_states import (
@@ -16,7 +14,8 @@ from states.general_states import (
     SpectateVKState, 
     SpectateDiscordState, 
     SpectateTelegramState, 
-    VerificationAccountState
+    VerificationAccountState, 
+    InputState
 )
 
 from handlers.user.logic.github_state_logic import *
@@ -24,6 +23,18 @@ from handlers.user.logic.twitch_state_logic import *
 from handlers.user.logic.vk_state_logic import *
 from handlers.user.logic.discord_state_logic import *
 from handlers.user.logic.telegram_state_logic import *
+
+async def delete_message_and_answer(query: types.CallbackQuery, text, markrup, state: None): 
+    await query.message.delete()
+    await query.message.answer(text, parse_mode='Markdown', reply_markup=markrup)
+
+    if state is not None: 
+        await state.finish()
+
+# INPUT 
+@dp.message_handler(state=InputState.StartInputMode)
+async def input_message_handler(message: types.Message, state: FSMContext): 
+    pass
 
 # VERIFICATION 
 @dp.callback_query_handler(state=VerificationAccountState.StartVerification)
@@ -93,60 +104,120 @@ async def wait_password_handler(message: types.Message, state: FSMContext):
 
 # SPECTATE GITHUB
 @dp.callback_query_handler(state=SpectateGitHubState.StartSpectate)
-async def github_state_handler(callback_query: types.CallbackQuery, state: FSMContext): 
-    if callback_query.data == 'add_user_to_list': 
-        await callback_query.answer('add')
+async def github_state_handler(query: types.CallbackQuery, state: FSMContext): 
+    data = query.data
+    message = query.message
 
-    elif callback_query.data == 'go_to_previous_step': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('*Service selection panel*', parse_mode='Markdown', reply_markup=user_keyboard_work_mode)
+    user_data = {
+        'user_id': query.from_user.id, 
+        'username': query.from_user.username
+    }
 
-        await state.finish()
+    if data == 'add_user_to_list':
+        await message.answer('Input username:')
+        await state.set_state(InputState.StartInputMode)
+
+    elif data == 'delete_user_from_list': 
+        await message.answer() 
+    
+    elif data == 'get_detail_info': 
+        pass
+
+    elif data == 'get_checker_list': 
+        checker_list = await get_checker_list(user_data)
+
+        if not checker_list: 
+            await message.answer('Sorry! Checker list is empty')
+            await message.answer()
+            return 
+
+        await message.answer(checker_list)
+        await message.answer()
+
+    elif data == 'go_to_previous_step': 
+        await delete_message_and_answer(query, '*Service selection panel*', user_keyboard_work_mode, state)
 
 # SPECTATE TWITCH
 @dp.callback_query_handler(state=SpectateTwitchState.StartSpectate)
-async def twitch_state_handler(callback_query: types.CallbackQuery, state: FSMContext): 
-    if callback_query.data == 'add_user_to_list': 
-        await callback_query.answer('add')
+async def twitch_state_handler(query: types.CallbackQuery, state: FSMContext): 
+    data = query.data
+    message = query.message
 
-    elif callback_query.data == 'go_to_previous_step': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('*Service selection panel*', parse_mode='Markdown', reply_markup=user_keyboard_work_mode)
+    if data == 'add_user_to_list': 
+        await message.answer('Input username:')
+        await InputState.StartInputMode.set()
 
-        await state.finish()
+    elif data == 'delete_user_from_list': 
+        pass
+    
+    elif data == 'get_detail_info': 
+        pass
+
+    elif data == 'get_checker_list': 
+        pass
+
+    elif data == 'go_to_previous_step': 
+        await delete_message_and_answer(query, '*Service selection panel*', user_keyboard_work_mode, SpectateGitHubState.StartSpectate)
 
 # SPECTATE VK
 @dp.callback_query_handler(state=SpectateVKState.StartSpectate)
-async def vk_state_handler(callback_query: types.CallbackQuery, state: FSMContext): 
-    if callback_query.data == 'add_user_to_list': 
-        await callback_query.answer('add')
+async def vk_state_handler(query: types.CallbackQuery, state: FSMContext): 
+    data = query.data
+    message = query.message
 
-    elif callback_query.data == 'go_to_previous_step': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('*Service selection panel*', parse_mode='Markdown', reply_markup=user_keyboard_work_mode)
+    if data == 'add_user_to_list': 
+        pass
 
-        await state.finish()
+    elif data == 'delete_user_from_list': 
+        pass
+    
+    elif data == 'get_detail_info': 
+        pass
+
+    elif data == 'get_checker_list': 
+        pass
+
+    elif data == 'go_to_previous_step': 
+        await delete_message_and_answer(query, '*Service selection panel*', user_keyboard_work_mode, SpectateGitHubState.StartSpectate)
 
 # SPECTATE DISCORD
 @dp.callback_query_handler(state=SpectateDiscordState.StartSpectate)
-async def discord_state_handler(callback_query: types.CallbackQuery, state: FSMContext): 
-    if callback_query.data == 'add_user_to_list': 
-        await callback_query.answer('add')
+async def discord_state_handler(query: types.CallbackQuery, state: FSMContext): 
+    data = query.data
+    message = query.message
 
-    elif callback_query.data == 'go_to_previous_step': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('*Service selection panel*', parse_mode='Markdown', reply_markup=user_keyboard_work_mode)
+    if data == 'add_user_to_list': 
+        pass
 
-        await state.finish()
+    elif data == 'delete_user_from_list': 
+        pass
+    
+    elif data == 'get_detail_info': 
+        pass
+
+    elif data == 'get_checker_list': 
+        pass
+
+    elif data == 'go_to_previous_step': 
+        await delete_message_and_answer(query, '*Service selection panel*', user_keyboard_work_mode, SpectateGitHubState.StartSpectate)
 
 # SPECTATE TELEGRAM
 @dp.callback_query_handler(state=SpectateTelegramState.StartSpectate)
-async def telegram_state_handler(callback_query: types.CallbackQuery, state: FSMContext): 
-    if callback_query.data == 'add_user_to_list': 
-        await callback_query.answer('add')
+async def telegram_state_handler(query: types.CallbackQuery, state: FSMContext): 
+    data = query.data
+    message = query.message
 
-    elif callback_query.data == 'go_to_previous_step': 
-        await callback_query.message.delete()
-        await callback_query.message.answer('*Service selection panel*', parse_mode='Markdown', reply_markup=user_keyboard_work_mode)
+    if data == 'add_user_to_list': 
+        pass
 
-        await state.finish()
+    elif data == 'delete_user_from_list': 
+        pass
+    
+    elif data == 'get_detail_info': 
+        pass
+
+    elif data == 'get_checker_list': 
+        pass
+
+    elif data == 'go_to_previous_step': 
+        await delete_message_and_answer(query, '*Service selection panel*', user_keyboard_work_mode, SpectateGitHubState.StartSpectate)

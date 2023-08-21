@@ -29,6 +29,7 @@ keyboard_spectate_github.add(
     types.InlineKeyboardButton('Add user to the checker list', callback_data='add_user_to_list'),
     types.InlineKeyboardButton('Delete user from spectate', callback_data='delete_user_from_list'),
     types.InlineKeyboardButton('Get detail info about user', callback_data='get_detail_info'),
+    types.InlineKeyboardButton('Get checker list', callback_data='get_checker_list'),
     types.InlineKeyboardButton('Come back', callback_data='go_to_previous_step'),
 )
 

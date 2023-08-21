@@ -4,6 +4,9 @@ class WorkModeState(StatesGroup):
     StartSpectateMode = State()
     StartTrainingMode = State()
 
+class InputState(StatesGroup): 
+    StartInputMode = State()
+    ConfirmAction = State()
 
 class VerificationAccountState(StatesGroup):
     StartVerification = State()

@@ -2,8 +2,6 @@ from aiogram import types
 
 from initializer import dp
 
-from supporting_module import delete_message_and_answer
-
 from keyboards.user.inline_keyboard import (
     keyboard_spectate_github,
     keyboard_spectate_twitch,
@@ -21,6 +19,13 @@ from states.general_states import (
     SpectateTelegramState,
     VerificationAccountState,
 )
+
+async def delete_message_and_answer(query: types.CallbackQuery, text: str, state=None, markup=None):
+    await query.message.delete()
+    await query.message.answer(text, parse_mode='Markdown', reply_markup=markup)
+
+    if state is not None: 
+        await state.set()
 
 @dp.callback_query_handler(lambda c: True)
 async def selectel_panel_handler(query: types.CallbackQuery): 
